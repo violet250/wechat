@@ -95,6 +95,7 @@ class MiniProgramServiceProvider implements ServiceProviderInterface
 
         $pimple['mini_program.sns'] = function ($pimple) {
             return new Sns(
+                $pimple['open_platform.access_token'],
                 $pimple['mini_program.access_token'],
                 $pimple['config']['mini_program']
             );

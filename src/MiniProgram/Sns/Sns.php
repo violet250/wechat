@@ -36,6 +36,27 @@ class Sns extends AbstractMiniProgram
     const JSCODE_TO_SESSION = 'https://api.weixin.qq.com/sns/jscode2session';
 
     /**
+     * @var \EasyWeChat\OpenPlatform\AccessToken
+     */
+    protected $openPlatformaccessToken;
+
+    /**
+     * Sns constructor.
+     *
+     * @param \EasyWeChat\OpenPlatform\AccessToken $openPlatformaccessToken
+     * @param \EasyWeChat\MiniProgram\AccessToken $accessToken
+     * @param array                               $config
+     */
+    public function __construct($openPlatformaccessToken, $accessToken, $config)
+    {
+        parent::__construct($accessToken, $config);
+
+        $this->openPlatformaccessToken = $openPlatformaccessToken;
+    }
+
+
+
+    /**
      * JsCode 2 session key.
      *
      * @param string $jsCode
@@ -46,10 +67,16 @@ class Sns extends AbstractMiniProgram
     {
         $params = [
             'appid' => $this->config['app_id'],
-            'secret' => $this->config['secret'],
             'js_code' => $jsCode,
             'grant_type' => 'authorization_code',
         ];
+
+        if($openAccessToken && $openAccessToken->getAppId()){
+            $param['component_appid'] = $openAccessToken->getAppId();
+            $param['component_access_token'] = $openAccessToken->getToken();
+        }else {
+            $param['secret'] => $this->config['secret'];
+        }
 
         return $this->parseJSON('GET', [self::JSCODE_TO_SESSION, $params]);
     }
